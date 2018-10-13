@@ -1,27 +1,76 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <title>Twiddler</title>
+    <link href="style.css" type="text/css" rel="stylesheet">
     <script src="jquery.js"></script>
     <script src="data_generator.js"></script>
   </head>
   <body>
+
+
     <script>
 
       $(document).ready(function(){
-        var $body = $('body');
-        $body.html('');
 
-        var index = streams.home.length - 1;
-        while(index >= 0){
-          var tweet = streams.home[index];
-          var $tweet = $('<div></div>');
-          $tweet.text('@' + tweet.user + ': ' + tweet.message);
-          $tweet.appendTo($body);
-          index -= 1;
-        }
+        
+        var maxFeedLength = 25;
+        var iterableFeedLength;
+        var $feed = $('.feed');
+
+
+        initializeFeed($feed);
+
+        var refreshId = setInterval( function() {
+          $feed.html('');
+          var index = streams.home.length - 1;
+
+          if (streams.home.length < maxFeedLength) {
+            earliestIndexOfFeed = 0;
+          } else {
+            earliestIndexOfFeed = streams.home.length - maxFeedLength;
+          }
+
+          while(index >= earliestIndexOfFeed){
+            addNewTweetToFeed(index, $feed);
+            index -= 1;
+          }
+        }, 2000);
 
       });
 
+      var addNewTweetToFeed = function(index, $feed){
+        var tweet = streams.home[index];
+        var tweetTime = tweet.created_at.toString().slice(0,25);
+        var $tweet = $('<div class="tweet"></div>');
+        var $tweeter = $('<h3></h3>').text('@' + tweet.user);
+        var $message = $('<div class="message"></div>').text(tweet.message);
+        var $tweetTime = $('<div class="tweetTime"></div>').text(tweetTime);
+        $tweet.append($tweeter, $message, $tweetTime);
+        $tweet.appendTo($feed);
+      };
+
+      var initializeFeed = function($feed) {
+        for (var i = 0; i < streams.home.length; i++) {
+          addNewTweetToFeed(i, $feed);
+        }
+      };
+
+
     </script>
+
+
+    <!-- Side navigation -->
+    <div class="sidenav">
+      <img src="Avatar-pic.png" class="avatar-img">
+      <h1>HRATX38</h1>
+      <h2>@hratx38</h2>
+    </div>
+
+<!-- Page content -->
+<div class="feed">
+</div>
+
+
   </body>
 </html>
