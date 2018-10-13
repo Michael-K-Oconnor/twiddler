@@ -18,12 +18,10 @@
         var iterableFeedLength;
         var $feed = $('.feed');
 
-
         initializeFeed($feed);
 
         var refreshId = setInterval( function() {
           $feed.html('');
-          var index = streams.home.length - 1;
 
           if (streams.home.length < maxFeedLength) {
             earliestIndexOfFeed = 0;
@@ -31,11 +29,12 @@
             earliestIndexOfFeed = streams.home.length - maxFeedLength;
           }
 
+          var index = streams.home.length - 1;
           while(index >= earliestIndexOfFeed){
             addNewTweetToFeed(index, $feed);
             index -= 1;
           }
-        }, 2000);
+        }, 5000);
 
       });
 
@@ -43,7 +42,7 @@
         var tweet = streams.home[index];
         var tweetTime = tweet.created_at.toString().slice(0,25);
         var $tweet = $('<div class="tweet"></div>');
-        var $tweeter = $('<h3></h3>').text('@' + tweet.user);
+        var $tweeter = $('<a href="#" id="userProfileLink" onclick="clickFunc(event, this)"></a>').text('@' + tweet.user);
         var $message = $('<div class="message"></div>').text(tweet.message);
         var $tweetTime = $('<div class="tweetTime"></div>').text(tweetTime);
         $tweet.append($tweeter, $message, $tweetTime);
@@ -57,19 +56,28 @@
       };
 
 
+      var clickFunc = function(event, input) {
+        var selectedUser = event.currentTarget.firstChild.data;
+        selectedUser = selectedUser.slice(1);
+        endURL = './profilepage.html?user=' + selectedUser;
+        console.log(endURL);
+        $("a#userProfileLink").attr("href", endURL);
+        return false;
+     };
+
+
     </script>
 
 
-    <!-- Side navigation -->
     <div class="sidenav">
       <img src="Avatar-pic.png" class="avatar-img">
       <h1>HRATX38</h1>
       <h2>@hratx38</h2>
     </div>
 
-<!-- Page content -->
-<div class="feed">
-</div>
+
+  <div class="feed">
+  </div>
 
 
   </body>

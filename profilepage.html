@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Twiddler</title>
+    <link href="style.css" type="text/css" rel="stylesheet">
+    <script src="jquery.js"></script>
+    <script src="data_generator.js"></script>
+  </head>
+  <body>
+    <script>
+
+        $(document).ready(function(){
+            
+            var maxFeedLength = 25;
+            var iterableFeedLength;    
+
+            var $feed = $('.feed');
+            var $sidenav = $('.sidenav');
+
+            var url = window.location.href;
+            var userName = url.split('user=').pop();
+            var $userName = $('<h1></h1>').text(userName);
+            var $userHandle = $('<h2></h2>').text('@' + userName)
+            $sidenav.append($userName, $userHandle);
+
+
+            initializeFeed($feed, userName);
+
+            var refreshId = setInterval( function() {
+                $feed.html('');
+
+                if (streams.users[userName].length < maxFeedLength) {
+                    earliestIndexOfFeed = 0;
+                } else {
+                    earliestIndexOfFeed = streams.users[userName].length - maxFeedLength;
+                }
+
+                var index = streams.users[userName].length - 1;
+                while(index >= earliestIndexOfFeed){
+                    addNewTweetToFeed(index, $feed, userName);
+                    index -= 1;
+                }
+            }, 5000);            
+        });     
+
+        var addNewTweetToFeed = function(index, $feed, userName){
+            var tweet = streams.users[userName][index];
+            var tweetTime = tweet.created_at.toString().slice(0,25);
+            var $tweet = $('<div class="tweet"></div>');
+            var $tweeter = $('<a href="#" id="userProfileLink" onclick="clickFunc(event, this)"></a>').text('@' + tweet.user);
+            var $message = $('<div class="message"></div>').text(tweet.message);
+            var $tweetTime = $('<div class="tweetTime"></div>').text(tweetTime);
+            $tweet.append($tweeter, $message, $tweetTime);
+            $tweet.appendTo($feed);
+        };
+
+
+        var initializeFeed = function($feed, userName) {
+            for (var i = 0; i < streams.users[userName].length; i++) {
+                addNewTweetToFeed(i, $feed, userName);
+            }
+        };
+
+    </script>
+
+
+    <div class="sidenav">
+      <img src="Avatar-pic.png" class="avatar-img">
+    </div>
+
+
+    <div class="feed">
+    </div>
+
+
+  </body>
+</html>
